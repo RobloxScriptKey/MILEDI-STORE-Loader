@@ -1,23 +1,37 @@
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
 
 -- Удалить старый GUI, если есть
 local oldGui = CoreGui:FindFirstChild("PlayerokKeyGui")
 if oldGui then oldGui:Destroy() end
 
--- Ключ для проверки
-local keyData = {80,108,97,121,101,114,111,107,32,77,73,76,69,68,73,32,83,84,79,82,69}
-local function decodeKey(tbl)
-	local s = ""
-	for _, v in ipairs(tbl) do s = s .. string.char(v) end
-	return s
+-- Загрузка ключей с GitHub
+local keysURL = "https://raw.githubusercontent.com/RobloxScriptKey/MilediKeys-/main/MILEDI-keys.json"
+local success, response = pcall(function()
+    return game:HttpGet(keysURL)
+end)
+
+local keys = {}
+if success then
+    keys = HttpService:JSONDecode(response)
 end
-local validKey = decodeKey(keyData)
+
+local today = os.date("%Y-%m-%d")
+local todayKeyTable = keys[today]
+
+local validKey = nil
+if todayKeyTable then
+    validKey = ""
+    for _, v in ipairs(todayKeyTable) do
+        validKey = validKey .. string.char(v)
+    end
+end
 
 -- Обфусцированная ссылка на скрипт
 local urlData = {
-	104,116,116,112,115,58,47,47,112,97,115,116,101,102,121,46,97,112,112,47,114,103,72,101,53,65,115,55,47,114,97,119
+    104,116,116,112,115,58,47,47,112,97,115,116,101,102,121,46,97,112,112,47,114,103,72,101,53,65,115,55,47,114,97,119
 }
 local function decodeURL(tbl)
 	local s = ""
@@ -117,7 +131,7 @@ copyFeedback.TextSize = 16
 
 TweenService:Create(frame, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
 
--- Перемещение окна (работает на ПК и телефоне)
+-- Перемещение окна
 local dragging = false
 local dragStart = nil
 local startPos = nil
@@ -150,7 +164,10 @@ end)
 -- Проверка ключа
 button.MouseButton1Click:Connect(function()
 	local input = box.Text:match("^%s*(.-)%s*$")
-	if input == validKey then
+	if not validKey then
+		feedback.Text = "⚠️ Ключ на сегодня не найден"
+		feedback.TextColor3 = Color3.fromRGB(255, 170, 0)
+	elseif input == validKey then
 		feedback.Text = "✅ Ключ верный, загружаем..."
 		feedback.TextColor3 = Color3.fromRGB(30, 200, 30)
 		wait(1)
@@ -162,7 +179,7 @@ button.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Кнопка получения ключа
+-- Получить ключ
 getKeyButton.MouseButton1Click:Connect(function()
 	local link = "https://playerok.com/profile/MILEDI-STORE/products"
 	setclipboard(link)
