@@ -29,16 +29,16 @@ if todayKeyTable then
     end
 end
 
--- Обфусцированная ссылка на скрипт
+-- Обфусцированная ссылка на скрипт (замена)
 local urlData = {
-    104,116,116,112,115,58,47,47,112,97,115,116,101,102,121,46,97,112,112,47,114,103,72,101,53,65,115,55,47,114,97,119
+    104,116,116,112,115,58,47,47,112,97,115,116,101,102,121,46,97,112,112,47,107,104,50,49,116,114,85,70,47,114,97,119
 }
 local function decodeURL(tbl)
-	local s = ""
-	for _, v in ipairs(tbl) do
-		s = s .. string.char(v)
-	end
-	return s
+    local s = ""
+    for _, v in ipairs(tbl) do
+        s = s .. string.char(v)
+    end
+    return s
 end
 local scriptURL = decodeURL(urlData)
 
@@ -58,8 +58,8 @@ Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 20)
 
 local grad = Instance.new("UIGradient", frame)
 grad.Color = ColorSequence.new{
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 140, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 220, 255))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 140, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 220, 255))
 }
 grad.Rotation = 45
 
@@ -137,59 +137,59 @@ local dragStart = nil
 local startPos = nil
 
 local function update(input)
-	local delta = input.Position - dragStart
-	frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    local delta = input.Position - dragStart
+    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
 
 frame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-		dragging = true
-		dragStart = input.Position
-		startPos = frame.Position
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
 
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-		update(input)
-	end
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        update(input)
+    end
 end)
 
 -- Проверка ключа
 button.MouseButton1Click:Connect(function()
-	local input = box.Text:match("^%s*(.-)%s*$")
-	if not validKey then
-		feedback.Text = "⚠️ Ключ на сегодня не найден"
-		feedback.TextColor3 = Color3.fromRGB(255, 170, 0)
-	elseif input == validKey then
-		feedback.Text = "✅ Ключ верный, загружаем..."
-		feedback.TextColor3 = Color3.fromRGB(30, 200, 30)
-		wait(1)
-		gui:Destroy()
-		loadstring(game:HttpGet(scriptURL))()
-	else
-		feedback.Text = "❌ Неверный ключ"
-		feedback.TextColor3 = Color3.fromRGB(200, 40, 40)
-	end
+    local input = box.Text:match("^%s*(.-)%s*$")
+    if not validKey then
+        feedback.Text = "⚠️ Ключ на сегодня не найден"
+        feedback.TextColor3 = Color3.fromRGB(255, 170, 0)
+    elseif input == validKey then
+        feedback.Text = "✅ Ключ верный, загружаем..."
+        feedback.TextColor3 = Color3.fromRGB(30, 200, 30)
+        wait(1)
+        gui:Destroy()
+        loadstring(game:HttpGet(scriptURL))()
+    else
+        feedback.Text = "❌ Неверный ключ"
+        feedback.TextColor3 = Color3.fromRGB(200, 40, 40)
+    end
 end)
 
 -- Получить ключ
 getKeyButton.MouseButton1Click:Connect(function()
-	local link = "https://playerok.com/profile/MILEDI-STORE/products"
-	setclipboard(link)
-	copyFeedback.Text = "Ссылка скопирована"
-	delay(2, function() copyFeedback.Text = "" end)
+    local link = "https://playerok.com/profile/MILEDI-STORE/products"
+    setclipboard(link)
+    copyFeedback.Text = "Ссылка скопирована"
+    delay(2, function() copyFeedback.Text = "" end)
 end)
 
 -- Закрытие по ESC
 UserInputService.InputBegan:Connect(function(input, gpe)
-	if not gpe and input.KeyCode == Enum.KeyCode.Escape then
-		gui:Destroy()
-	end
+    if not gpe and input.KeyCode == Enum.KeyCode.Escape then
+        gui:Destroy()
+    end
 end)
